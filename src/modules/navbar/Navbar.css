@@ -1,0 +1,71 @@
+/*
+  Navbar.css
+
+  Styles for the navigation bar and its components:
+
+  - .navbar-style: Main navbar container styling, sets color, width, border radius, and padding.
+  - .container: Centers content, removes default padding/margin, ensures full width.
+  - .navbar-nav: Styles the navigation list, including border, padding, and width.
+  - .navbar-nav :hover: Adds border radius on hover for nav items.
+  - .navbar-style .dropdown-main > .nav-link: Truncates long nav links with ellipsis, sets font.
+  - .navbar-style .dropdown-header: Ensures dropdown header text color.
+  - .navbar-style .dropdown-item: Styles dropdown items with color, font, margin, border, and width.
+  - .navbar-style .dropdown-item:hover: Changes dropdown item color and background on hover.
+  - .navbar-style .dropdown-main: Styles main dropdown container with color and font.
+  - .top-div: Styles the top section with a gradient background, shadow, padding, and font.
+  - .site-name: Aligns and styles the site name text within the navbar.
+*/
+
+
+
+/* Navbar container */
+.navbar {
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  justify-content: center;
+}
+
+/* Top-level menu list */
+.nav-list {
+  border-bottom: 3px solid #c9c9c9;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Top-level menu items */
+.nav-item {
+  position: relative;
+  flex: 1 1 33.33%;
+  max-width: 33.33%;
+  text-align: center;
+}
+
+.nav-item-list {
+  width: 100%;
+}
+
+.nav-link {
+  display: flex;
+  min-height: 48px;
+  color: black;
+  text-decoration: none;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 1.5vh;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 100%;
+  transition: background-color 0.3s;
+}
+
+.nav-item:hover .nav-link {
+  box-shadow: inset 0px -10px 3px -5px #455b7888;
+  transition: 0.2s;
+}
+

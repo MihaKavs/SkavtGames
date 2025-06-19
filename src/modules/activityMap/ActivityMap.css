@@ -1,0 +1,19 @@
+.maplibregl-popup {
+  font-size: 14px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  color: black;
+}
+
+.maplibregl-popup-content {
+  padding: 2rem;
+}
+
+
+.maplibregl-popup-close-button {
+  color: black;
+  font-size: 2rem;
+  padding: 0.5rem;
+}
+

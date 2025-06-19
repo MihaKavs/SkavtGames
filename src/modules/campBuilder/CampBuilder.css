@@ -1,0 +1,68 @@
+.builder-container {
+  display: "flex";
+  flex-wrap: "wrap";
+  gap: "20px";
+  justify-content: "center";
+}
+
+.template-header {
+  color: black;
+  text-align: center;
+}
+
+.template-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.template-card {
+  cursor: pointer
+}
+
+.button-container {
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.add-button {
+  margin-right: 0.5rem;
+  background-color: darkcyan;
+  margin-bottom: 0.5rem;
+  box-shadow: 1px 1px 2px black;
+}
+
+.add-button:hover {
+  border: 1px solid black;
+}
+
+.export-button {
+  background-color: gainsboro;
+  color: black;
+  box-shadow: 1px 1px 2px black;
+
+}
+
+.export-button:hover {
+  border: 1px solid black;
+}
+
+.stage-style{
+  border: 1px solid #ccc; 
+  touch-action: manipulation;
+  width: fit-content;
+}
+
+.stage-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
