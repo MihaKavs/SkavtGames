@@ -1,0 +1,23 @@
+.backpack-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  width: 300px;
+  height: 500px;
+  background-color: #c2b280;
+  border: 2px solid #444;
+  gap: 2px;
+}
+
+.grid-cell {
+  background-color: #eee;
+  border: 1px dashed #aaa;
+}
+
+
+.grid-block {
+  cursor: grab;
+}
+.grid-block:active {
+  cursor: grabbing;
+}
