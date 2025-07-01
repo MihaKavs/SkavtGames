@@ -106,7 +106,8 @@ const CampBuilder = () => {
       const padding = 40; // optional margin
       const maxWidth = 800;
       const maxHeight = 600;
-      const width = Math.min(window.innerWidth - padding, maxWidth);
+      console.log(window, padding, maxWidth);
+      const width = Math.min(window.outerWidth - padding, maxWidth);
       const height = (width / maxWidth) * maxHeight;
       setStageSize({ width, height });
     };
@@ -216,7 +217,11 @@ const CampBuilder = () => {
                 activeTemplate === 1 ? "2px solid blue" : "1px solid #ccc",
             }}
           >
-            <Stage width={stageSize.width / 4} height={stageSize.height / 4}>
+            <Stage
+              width={stageSize.width / 4}
+              height={stageSize.height / 4}
+              style={{ pointerEvents: "none" }}
+            >
               <Layer>
                 <Group scale={{ x: 0.25, y: 0.25 }}>{renderedTemplate1}</Group>
               </Layer>
@@ -231,7 +236,11 @@ const CampBuilder = () => {
                 activeTemplate === 2 ? "2px solid blue" : "1px solid #ccc",
             }}
           >
-            <Stage width={stageSize.width / 4} height={stageSize.height / 4}>
+            <Stage
+              width={stageSize.width / 4}
+              height={stageSize.height / 4}
+              style={{ pointerEvents: "none" }}
+            >
               <Layer>
                 <Group scale={{ x: 0.25, y: 0.25 }}>{renderedTemplate2}</Group>
               </Layer>
@@ -245,7 +254,11 @@ const CampBuilder = () => {
                 activeTemplate === 3 ? "2px solid blue" : "1px solid #ccc",
             }}
           >
-            <Stage width={stageSize.width / 4} height={stageSize.height / 4}>
+            <Stage
+              width={stageSize.width / 4}
+              height={stageSize.height / 4}
+              style={{ pointerEvents: "none" }}
+            >
               <Layer>
                 <Group scale={{ x: 0.25, y: 0.25 }}>{renderedTemplate3}</Group>
               </Layer>
@@ -259,7 +272,11 @@ const CampBuilder = () => {
                 activeTemplate === 4 ? "2px solid blue" : "1px solid #ccc",
             }}
           >
-            <Stage width={stageSize.width / 4} height={stageSize.height / 4}>
+            <Stage
+              width={stageSize.width / 4}
+              height={stageSize.height / 4}
+              style={{ pointerEvents: "none" }}
+            >
               <Layer>
                 <Group scale={{ x: 0.25, y: 0.25 }}>{renderedTemplate4}</Group>
               </Layer>

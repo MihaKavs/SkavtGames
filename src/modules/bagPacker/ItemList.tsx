@@ -1,99 +1,65 @@
-type GridBlockProps = {
+import React from "react";
+
+type Item = {
+  id: string;
+  name: string;
+  icon: string;
   rows: number;
   columns: number;
   color: string;
-  itemId: string;
+  amount: number;
 };
 
-const GridBlock = ({ rows, columns, color, itemId }: GridBlockProps) => {
-  const totalCells = rows * columns;
+type ItemListProps = {
+  items: Item[];
+  cellSize?: number; // For scaling the preview properly
+};
 
-  const handleDragStart = (e: React.DragEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
+export default function ItemList({ items, cellSize = 20 }: ItemListProps) {
+  const handleDragStart = (e: React.DragEvent, item: Item) => {
+    e.dataTransfer.setData("text/plain", item.id);
 
-    e.dataTransfer.setData(
-      "application/json",
-      JSON.stringify({ itemId, offsetX, offsetY })
-    );
+    // Create drag preview element
+    const preview = document.createElement("div");
+    preview.style.width = `${item.columns * cellSize}px`;
+    preview.style.height = `${item.rows * cellSize}px`;
+    preview.style.backgroundColor = item.color;
+    preview.style.opacity = "0.8";
+    preview.style.border = "2px dashed black";
+    preview.style.display = "flex";
+    preview.style.alignItems = "center";
+    preview.style.justifyContent = "center";
+    preview.style.fontSize = "16px";
+    preview.style.color = "white";
+    preview.innerText = item.icon;
+
+    document.body.appendChild(preview);
+    e.dataTransfer.setDragImage(preview, 0, 0);
+
+    // Remove preview after drag starts
+    setTimeout(() => document.body.removeChild(preview), 0);
   };
 
   return (
-    <div
-      className="grid-block"
-      draggable
-      onDragStart={handleDragStart}
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${columns}, 20px)`,
-        gridTemplateRows: `repeat(${rows}, 20px)`,
-        width: `${columns * 20}px`,
-        height: `${rows * 20}px`,
-        border: "1px solid #aaa",
-      }}
-    >
-      {Array.from({ length: totalCells }, (_, i) => (
-        <div
-          key={i}
-          style={{
-            width: "20px",
-            height: "20px",
-            backgroundColor: color,
-            border: "1px solid white",
-            boxSizing: "border-box",
-          }}
-        />
-      ))}
+    <div className="packer-items">
+      <h3 className="list-packer-title">Predmeti</h3>
+      <div className="list-container">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            draggable={item.amount > 0}
+            onDragStart={(e) => handleDragStart(e, item)}
+            className="item-container"
+            style={{
+              opacity: item.amount > 0 ? 1 : 0.5,
+              cursor: item.amount > 0 ? "grab" : "not-allowed",
+              backgroundColor: item.color,
+            }}
+          >
+            {item.icon} {item.name} ×{item.amount}
+          </div>
+        ))}
+      </div>
     </div>
   );
-};
-
-// items.ts
-export const items = [
-  {
-    id: "sleeping_bag",
-    name: "Sleeping Bag",
-    icon: "🛏️",
-    rows: 5,
-    columns: 10,
-    color: "gray",
-  },
-  {
-    id: "t_shirt",
-    name: "T-Shirt",
-    icon: "👕",
-    rows: 3,
-    columns: 1,
-    color: "green",
-  },
-];
-
-const ItemList = () => {
-  return (
-    <div style={{ padding: "16px" }}>
-      {items.map((item) => (
-        <div
-          key={item.id}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "16px",
-            gap: "12px",
-          }}
-        >
-          <div style={{ fontSize: "24px" }}>{item.icon}</div>
-          <GridBlock
-            itemId={item.id}
-            rows={item.rows}
-            columns={item.columns}
-            color={item.color}
-          />
-          <div>{item.name}</div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default ItemList;
+}
