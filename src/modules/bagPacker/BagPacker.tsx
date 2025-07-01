@@ -6,7 +6,6 @@ import "./BagPacker.css";
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 30;
 const CELL_SIZE = 20;
-
 type Item = {
   id: string;
   name: string;
@@ -28,6 +27,11 @@ type PlacedItem = {
 };
 
 export default function BagPacker() {
+  const [cellSize, setCellSize] = useState(() => {
+    const maxWidth = Math.min(window.innerWidth * 0.9, 400);
+    return Math.floor(maxWidth / GRID_WIDTH);
+  });
+
   const initialItems: Item[] = [
     {
       id: "sleeping_bag",
@@ -59,7 +63,7 @@ export default function BagPacker() {
     {
       id: "bowl",
       name: "Menaška",
-      icon: "👕",
+      icon: "🥣",
       rows: 5,
       columns: 7,
       color: "#1c1c1c",
@@ -68,16 +72,16 @@ export default function BagPacker() {
     {
       id: "short-pants",
       name: "Kratke hlače",
-      icon: "👕",
+      icon: "🩳",
       rows: 1,
       columns: 3,
       color: "#92faff",
-      amount: 3,
+      amount: 1,
     },
     {
       id: "pants",
       name: "Hlače",
-      icon: "👕",
+      icon: "👖",
       rows: 2,
       columns: 4,
       color: "#4d8a8d",
@@ -86,7 +90,7 @@ export default function BagPacker() {
     {
       id: "rain",
       name: "Palerina",
-      icon: "👕",
+      icon: "🧥",
       rows: 2,
       columns: 4,
       color: "#0013e9",
@@ -95,7 +99,7 @@ export default function BagPacker() {
     {
       id: "knife",
       name: "Nož",
-      icon: "👕",
+      icon: "🔪",
       rows: 1,
       columns: 2,
       color: "#e95800",
@@ -104,7 +108,7 @@ export default function BagPacker() {
     {
       id: "light",
       name: "Čelka",
-      icon: "👕",
+      icon: "🔦",
       rows: 1,
       columns: 2,
       color: "#ffc29d",
@@ -113,7 +117,7 @@ export default function BagPacker() {
     {
       id: "bottle",
       name: "Flaša",
-      icon: "👕",
+      icon: "🍶",
       rows: 10,
       columns: 5,
       color: "#ff3972",
@@ -122,7 +126,7 @@ export default function BagPacker() {
     {
       id: "kroj",
       name: "Kroj",
-      icon: "👕",
+      icon: "🍽️",
       rows: 5,
       columns: 4,
       color: "#ff5400",
@@ -131,7 +135,7 @@ export default function BagPacker() {
     {
       id: "nogavice",
       name: "Nogavice",
-      icon: "👕",
+      icon: "🧦",
       rows: 2,
       columns: 10,
       color: "#fffe00",
@@ -140,7 +144,7 @@ export default function BagPacker() {
     {
       id: "higene",
       name: "Osebna higiena",
-      icon: "👕",
+      icon: "🧼",
       rows: 4,
       columns: 4,
       color: "#757400",
@@ -149,7 +153,7 @@ export default function BagPacker() {
     {
       id: "towel",
       name: "Brisača",
-      icon: "👕",
+      icon: "🧻",
       rows: 3,
       columns: 7,
       color: "#82ffa5",
@@ -158,7 +162,7 @@ export default function BagPacker() {
     {
       id: "swimming",
       name: "Kopalke",
-      icon: "👕",
+      icon: "🏊",
       rows: 4,
       columns: 1,
       color: "#ff0c0c",
@@ -167,21 +171,34 @@ export default function BagPacker() {
     {
       id: "underwear",
       name: "Spodnje perilo",
-      icon: "👕",
+      icon: "🩲",
       rows: 3,
       columns: 5,
       color: "#fe0cff",
       amount: 1,
     },
   ];
+
   const [items, setItems] = useState<Item[]>(initialItems);
   const [packedItems, setPackedItems] = useState<PlacedItem[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [selectedPlacedId, setSelectedPlacedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const maxWidth = Math.min(window.innerWidth * 0.9, 400);
+      setCellSize(Math.floor(maxWidth / GRID_WIDTH));
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleItemDrop = (itemId: string, row: number, column: number) => {
     const item = items.find((i) => i.id === itemId);
-    if (!item || item.amount <= 0) return;
+    if (!item || item.amount <= 0) {
+      console.warn("Invalid item or no amount left");
+      return;
+    }
 
     if (row + item.rows > GRID_HEIGHT || column + item.columns > GRID_WIDTH) {
       console.warn("Item out of bounds");
@@ -213,79 +230,94 @@ export default function BagPacker() {
     };
 
     setPackedItems((prev) => [...prev, newItem]);
-
     setItems((prev) =>
       prev.map((i) => (i.id === itemId ? { ...i, amount: i.amount - 1 } : i))
     );
+    setSelectedItemId(null);
   };
 
-  const handleGridClick = (itemId: string) => {
-    setSelectedId(itemId);
+  const handleGridClick = (id: string) => {
+    console.log(`Selected placed item: ${id}`);
+    setSelectedPlacedId(id);
+    setSelectedItemId(null);
+  };
+
+  const handleItemSelect = (id: string) => {
+    console.log(`Selected item: ${id}`);
+    setSelectedItemId(id);
+    setSelectedPlacedId(null);
+  };
+
+  const handleMove = (row: number, col: number) => {
+    console.log(`Attempting to move to row: ${row}, col: ${col}`);
+    if (selectedItemId) {
+      handleItemDrop(selectedItemId, row, col);
+    } else if (selectedPlacedId) {
+      const movingItem = packedItems.find((i) => i.id === selectedPlacedId);
+      if (!movingItem) {
+        console.warn("No item found to move");
+        return;
+      }
+
+      if (
+        row + movingItem.rows > GRID_HEIGHT ||
+        col + movingItem.columns > GRID_WIDTH
+      ) {
+        console.warn("Move out of bounds");
+        return;
+      }
+
+      const overlaps = packedItems.some(
+        (i) =>
+          i.id !== selectedPlacedId &&
+          row < i.row + i.rows &&
+          row + movingItem.rows > i.row &&
+          col < i.column + i.columns &&
+          col + movingItem.columns > i.column
+      );
+
+      if (overlaps) {
+        console.warn("Move overlaps");
+        return;
+      }
+
+      setPackedItems((prev) =>
+        prev.map((i) =>
+          i.id === selectedPlacedId ? { ...i, row, column: col } : i
+        )
+      );
+      setSelectedPlacedId(null);
+    }
   };
 
   const handleDelete = () => {
-    if (!selectedId) return;
+    if (!selectedPlacedId) {
+      console.warn("No item selected to delete");
+      return;
+    }
 
-    const removed = packedItems.find((i) => i.id === selectedId);
-    if (!removed) return;
+    const removed = packedItems.find((i) => i.id === selectedPlacedId);
+    if (!removed) {
+      console.warn("Item to delete not found");
+      return;
+    }
 
-    setPackedItems((prev) => prev.filter((i) => i.id !== selectedId));
-
-    // restore 1 item to inventory
+    setPackedItems((prev) => prev.filter((i) => i.id !== selectedPlacedId));
     setItems((prev) =>
       prev.map((i) =>
         i.id === removed.itemId ? { ...i, amount: i.amount + 1 } : i
       )
     );
-
-    setSelectedId(null);
+    setSelectedPlacedId(null);
   };
 
-  const handleMove = (row: number, col: number) => {
-    if (!draggingId) return;
-    const movingItem = packedItems.find((i) => i.id === draggingId);
-    if (!movingItem) return;
-
-    if (
-      row + movingItem.rows > GRID_HEIGHT ||
-      col + movingItem.columns > GRID_WIDTH
-    ) {
-      return;
-    }
-
-    const overlaps = packedItems.some(
-      (i) =>
-        i.id !== draggingId &&
-        row < i.row + i.rows &&
-        row + movingItem.rows > i.row &&
-        col < i.column + i.columns &&
-        col + movingItem.columns > i.column
-    );
-
-    if (overlaps) return;
-
-    setPackedItems((prev) =>
-      prev.map((i) => (i.id === draggingId ? { ...i, row, column: col } : i))
-    );
-    setDraggingId(null);
-    setSelectedId(null);
-  };
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Delete") {
-        handleDelete();
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedId, packedItems]);
   const reset = () => {
     setPackedItems([]);
     setItems(initialItems);
-    setSelectedId(null);
-    setDraggingId(null);
+    setSelectedItemId(null);
+    setSelectedPlacedId(null);
   };
+
   return (
     <div className="main-packer-container">
       <h3 className="packer-title">Napolni nahrbtnik s predmeti</h3>
@@ -297,15 +329,29 @@ export default function BagPacker() {
           packedItems={packedItems}
           onItemDrop={handleItemDrop}
           onItemClick={handleGridClick}
-          selectedId={selectedId}
-          onItemDragStart={setDraggingId}
+          selectedId={selectedPlacedId}
+          onItemDragStart={setSelectedPlacedId}
           onItemDropPosition={handleMove}
         />
-        <ItemList items={items} />
+        <ItemList
+          items={items}
+          cellSize={CELL_SIZE}
+          onItemSelect={handleItemSelect}
+          selectedItemId={selectedItemId}
+        />
       </div>
-      <button className="packer-reset" onClick={reset}>
-        Ponastavi
-      </button>
+      <div className="packer-controls">
+        <button className="packer-reset" onClick={reset}>
+          Ponastavi
+        </button>
+        <button
+          className="packer-delete"
+          onClick={handleDelete}
+          disabled={!selectedPlacedId}
+        >
+          Izbriši
+        </button>
+      </div>
     </div>
   );
 }

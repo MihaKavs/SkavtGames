@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 type PlacedItem = {
   id: string;
@@ -16,8 +16,6 @@ type GridProps = {
   cellSize: number;
   packedItems: PlacedItem[];
   onItemDrop: (itemId: string, row: number, column: number) => void;
-
-  // New props for move/delete support
   onItemClick?: (id: string) => void;
   selectedId?: string | null;
   onItemDragStart?: (id: string) => void;
@@ -35,6 +33,8 @@ export default function Grid({
   onItemDragStart,
   onItemDropPosition,
 }: GridProps) {
+  const gridRef = useRef<HTMLDivElement>(null);
+
   const gridStyle: React.CSSProperties = {
     position: "relative",
     width: columns * cellSize,
@@ -44,19 +44,45 @@ export default function Grid({
     display: "grid",
     gridTemplateColumns: `repeat(${columns}, ${cellSize}px)`,
     gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
+    touchAction: "none",
   };
 
-  const handleCellClick = (row: number, col: number) => {
-    if (onItemDropPosition && draggingItemId.current) {
-      onItemDropPosition(row, col);
+  const handleCellTouch = (e: React.TouchEvent, row: number, col: number) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling
+    console.log(`Cell tapped: row ${row}, col ${col}`);
+    onItemDropPosition?.(row, col);
+  };
+
+  const handleItemTouchStart = (e: React.TouchEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(`Item tapped: ${id}`);
+    onItemClick?.(id);
+    onItemDragStart?.(id);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const rect = gridRef.current!.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const col = Math.floor(x / cellSize);
+    const row = Math.floor(y / cellSize);
+    const itemId = e.dataTransfer.getData("text/plain");
+    console.log(`Drop: itemId ${itemId}, row ${row}, col ${col}`);
+    if (itemId && onItemDrop) {
+      onItemDrop(itemId, row, col);
     }
   };
 
-  const draggingItemId = React.useRef<string | null>(null);
-
   return (
-    <div style={gridStyle}>
-      {/* Grid background (empty cells for click handling) */}
+    <div
+      ref={gridRef}
+      style={gridStyle}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       {Array.from({ length: rows * columns }).map((_, index) => {
         const row = Math.floor(index / columns);
         const col = index % columns;
@@ -64,7 +90,11 @@ export default function Grid({
         return (
           <div
             key={`cell-${row}-${col}`}
-            onClick={() => handleCellClick(row, col)}
+            onClick={() => {
+              console.log(`Cell clicked: row ${row}, col ${col}`);
+              onItemDropPosition?.(row, col);
+            }}
+            onTouchEnd={(e) => handleCellTouch(e, row, col)}
             style={{
               width: cellSize,
               height: cellSize,
@@ -75,24 +105,21 @@ export default function Grid({
         );
       })}
 
-      {/* Placed items */}
       {packedItems.map((item) => {
         const isSelected = selectedId === item.id;
 
         return (
           <div
             key={item.id}
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
+              console.log(`Item clicked: ${item.id}`);
               onItemClick?.(item.id);
             }}
-            draggable
+            onTouchStart={(e) => handleItemTouchStart(e, item.id)}
+            draggable={true}
             onDragStart={(e) => {
-              draggingItemId.current = item.id;
+              e.dataTransfer.setData("text/plain", item.id);
               onItemDragStart?.(item.id);
-            }}
-            onDragEnd={() => {
-              draggingItemId.current = null;
             }}
             style={{
               position: "absolute",
@@ -104,44 +131,16 @@ export default function Grid({
               opacity: 0.9,
               border: isSelected ? "3px solid red" : "1px solid #333",
               boxSizing: "border-box",
-              cursor: "move",
+              cursor: "pointer",
               zIndex: isSelected ? 2 : 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: `${cellSize * 0.8}px`,
             }}
-          />
+          ></div>
         );
       })}
-
-      {/* Drop area for moving dragged item */}
-      <div
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-
-          const col = Math.floor(x / cellSize);
-          const row = Math.floor(y / cellSize);
-
-          const itemId = e.dataTransfer.getData("text/plain");
-
-          if (itemId && onItemDrop) {
-            onItemDrop(itemId, row, col);
-          }
-
-          // Also support move inside grid
-          if (onItemDropPosition && draggingItemId.current) {
-            onItemDropPosition(row, col);
-          }
-        }}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: columns * cellSize,
-          height: rows * cellSize,
-        }}
-      />
     </div>
   );
 }

@@ -10,6 +10,11 @@
 .packer-items {
   color: black;
 }
+.packer-controls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
 .item-container {
   padding: 0.5rem;
@@ -23,10 +28,10 @@
 }
 
 .list-container{
-  height: 50%;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  max-height: 540px;
 }
 
 .packer-title {
@@ -41,11 +46,22 @@
   align-self: center;
   border: 1px solid black;
   box-shadow: 1px 1px 2px black;
+  margin-right: 0.5rem;
+  margin-bottom: 1rem;
+
 }
 
 .main-packer-container {
   display: flex;
   flex-direction: column;
+}
+
+.packer-delete {
+  background-color: red;
+  color: #000;
+  border: 1px solid black;
+  box-shadow: 1px 1px 2px black;
+  margin-bottom: 1rem;
 }
 
 
@@ -58,6 +74,7 @@
 
   .list-container {
     flex-wrap: nowrap;
+    max-height: 900px;
   }
   .list-packer-title {
     margin: 0.3rem;
