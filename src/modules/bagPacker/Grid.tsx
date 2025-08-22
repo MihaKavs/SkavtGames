@@ -50,14 +50,12 @@ export default function Grid({
   const handleCellTouch = (e: React.TouchEvent, row: number, col: number) => {
     e.preventDefault();
     e.stopPropagation(); // Prevent event bubbling
-    console.log(`Cell tapped: row ${row}, col ${col}`);
     onItemDropPosition?.(row, col);
   };
 
   const handleItemTouchStart = (e: React.TouchEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`Item tapped: ${id}`);
     onItemClick?.(id);
     onItemDragStart?.(id);
   };
@@ -70,7 +68,6 @@ export default function Grid({
     const col = Math.floor(x / cellSize);
     const row = Math.floor(y / cellSize);
     const itemId = e.dataTransfer.getData("text/plain");
-    console.log(`Drop: itemId ${itemId}, row ${row}, col ${col}`);
     if (itemId && onItemDrop) {
       onItemDrop(itemId, row, col);
     }
@@ -91,7 +88,6 @@ export default function Grid({
           <div
             key={`cell-${row}-${col}`}
             onClick={() => {
-              console.log(`Cell clicked: row ${row}, col ${col}`);
               onItemDropPosition?.(row, col);
             }}
             onTouchEnd={(e) => handleCellTouch(e, row, col)}
@@ -112,7 +108,6 @@ export default function Grid({
           <div
             key={item.id}
             onClick={() => {
-              console.log(`Item clicked: ${item.id}`);
               onItemClick?.(item.id);
             }}
             onTouchStart={(e) => handleItemTouchStart(e, item.id)}

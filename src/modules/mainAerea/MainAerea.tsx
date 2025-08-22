@@ -10,9 +10,7 @@ interface MainAereaProps {
 }
 
 const MainAerea = ({ game }: MainAereaProps) => {
-  useEffect(() => {
-    console.log("Game changed to:", game);
-  }, [game]);
+  useEffect(() => {}, [game]);
 
   const renderComponent = () => {
     switch (game) {

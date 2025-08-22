@@ -183,7 +183,8 @@ export default function BagPacker() {
   const [packedItems, setPackedItems] = useState<PlacedItem[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedPlacedId, setSelectedPlacedId] = useState<string | null>(null);
-
+  const [overlappError, setOverlappError] = useState(false);
+  const [outOfBounds, setOutOfBounds] = useState(false);
   useEffect(() => {
     const handleResize = () => {
       const maxWidth = Math.min(window.innerWidth * 0.9, 400);
@@ -193,6 +194,20 @@ export default function BagPacker() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    if (overlappError) {
+      const timer = setTimeout(() => setOverlappError(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [overlappError]);
+
+  useEffect(() => {
+    if (outOfBounds) {
+      const timer = setTimeout(() => setOutOfBounds(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [outOfBounds]);
+
   const handleItemDrop = (itemId: string, row: number, column: number) => {
     const item = items.find((i) => i.id === itemId);
     if (!item || item.amount <= 0) {
@@ -201,7 +216,8 @@ export default function BagPacker() {
     }
 
     if (row + item.rows > GRID_HEIGHT || column + item.columns > GRID_WIDTH) {
-      console.warn("Item out of bounds");
+      setOverlappError(true);
+      setOutOfBounds(true);
       return;
     }
 
@@ -216,6 +232,7 @@ export default function BagPacker() {
 
     if (overlaps) {
       console.warn("Item overlaps");
+      setOverlappError(true);
       return;
     }
 
@@ -237,19 +254,16 @@ export default function BagPacker() {
   };
 
   const handleGridClick = (id: string) => {
-    console.log(`Selected placed item: ${id}`);
     setSelectedPlacedId(id);
     setSelectedItemId(null);
   };
 
   const handleItemSelect = (id: string) => {
-    console.log(`Selected item: ${id}`);
     setSelectedItemId(id);
     setSelectedPlacedId(null);
   };
 
   const handleMove = (row: number, col: number) => {
-    console.log(`Attempting to move to row: ${row}, col: ${col}`);
     if (selectedItemId) {
       handleItemDrop(selectedItemId, row, col);
     } else if (selectedPlacedId) {
@@ -321,6 +335,19 @@ export default function BagPacker() {
   return (
     <div className="main-packer-container">
       <h3 className="packer-title">Napolni nahrbtnik s predmeti</h3>
+      <p className="packer-instructions">
+        Klikni na predmet nato na mesto v nahrbtniku. Kjer klikneš bo postavljen
+        zgornji kot predmeta.
+      </p>
+      <p className="packer-instructions">
+        Če se ne postavi ni zanj dovolj prostora
+      </p>
+      {outOfBounds && (
+        <p className="error-message">Predmet presega meje nahrbtnika</p>
+      )}
+      {overlappError && (
+        <p className="error-message">Predmet se prekriva z drugim predmetom</p>
+      )}
       <div className="packer-container">
         <Grid
           rows={GRID_HEIGHT}

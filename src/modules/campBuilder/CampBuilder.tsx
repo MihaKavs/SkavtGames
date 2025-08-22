@@ -106,7 +106,6 @@ const CampBuilder = () => {
       const padding = 40; // optional margin
       const maxWidth = 800;
       const maxHeight = 600;
-      console.log(window, padding, maxWidth);
       const width = Math.min(window.outerWidth - padding, maxWidth);
       const height = (width / maxWidth) * maxHeight;
       setStageSize({ width, height });
@@ -300,7 +299,9 @@ const CampBuilder = () => {
           <button onClick={() => addProp("kitchen")} className="add-button">
             Dodaj kuhinjo
           </button>
-
+          <button onClick={() => addProp("cross")} className="add-button">
+            Dodaj jambor
+          </button>
           <button onClick={exportImage} className="export-button">
             Izvozi sliko
           </button>
