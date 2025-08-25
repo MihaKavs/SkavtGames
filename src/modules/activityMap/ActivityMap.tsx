@@ -110,7 +110,7 @@ function ActivityMap() {
           new maplibregl.Popup({ offset: 25 }).setHTML(`
             <strong className="title-of-activity">${place.what}</strong><br/>
             <em>${place.when}</em><br/>
-            <div>Udeleženci: ${place.who}</div>
+            <div class="participants">Udeleženci: ${place.who}</div>
             ${
               place.photoUrl
                 ? `<img src="${place.photoUrl}" width="100%" />`

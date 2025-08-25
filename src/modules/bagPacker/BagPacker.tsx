@@ -184,7 +184,6 @@ export default function BagPacker() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedPlacedId, setSelectedPlacedId] = useState<string | null>(null);
   const [overlappError, setOverlappError] = useState(false);
-  const [outOfBounds, setOutOfBounds] = useState(false);
   useEffect(() => {
     const handleResize = () => {
       const maxWidth = Math.min(window.innerWidth * 0.9, 400);
@@ -201,13 +200,6 @@ export default function BagPacker() {
     }
   }, [overlappError]);
 
-  useEffect(() => {
-    if (outOfBounds) {
-      const timer = setTimeout(() => setOutOfBounds(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [outOfBounds]);
-
   const handleItemDrop = (itemId: string, row: number, column: number) => {
     const item = items.find((i) => i.id === itemId);
     if (!item || item.amount <= 0) {
@@ -217,7 +209,6 @@ export default function BagPacker() {
 
     if (row + item.rows > GRID_HEIGHT || column + item.columns > GRID_WIDTH) {
       setOverlappError(true);
-      setOutOfBounds(true);
       return;
     }
 
@@ -342,11 +333,11 @@ export default function BagPacker() {
       <p className="packer-instructions">
         Če se ne postavi ni zanj dovolj prostora
       </p>
-      {outOfBounds && (
-        <p className="error-message">Predmet presega meje nahrbtnika</p>
-      )}
+      {!overlappError && <p className="error-place"></p>}
       {overlappError && (
-        <p className="error-message">Predmet se prekriva z drugim predmetom</p>
+        <p className="error-message error-place">
+          Predmet se prekriva z drugim predmetom, ali pa presega meje nahrbtnika
+        </p>
       )}
       <div className="packer-container">
         <Grid

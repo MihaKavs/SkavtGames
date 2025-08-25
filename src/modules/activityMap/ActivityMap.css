@@ -8,8 +8,11 @@
 
 .maplibregl-popup-content {
   padding: 2rem;
+  width: 30vw;
+  font-size: xx-large;
+  display: flex;
+  flex-direction: column;
 }
-
 
 .maplibregl-popup-close-button {
   color: black;
@@ -17,3 +20,14 @@
   padding: 0.5rem;
 }
 
+.participants {
+  padding-bottom: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .maplibregl-popup-content {
+    padding: 0.6rem;
+    width: 85vw;
+    font-size: larger;
+  }
+}
