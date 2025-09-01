@@ -90,7 +90,7 @@ function ActivityMap() {
       container: mapContainer.current,
       style:
         "https://api.maptiler.com/maps/streets/style.json?key=WdmKesoALlxC0tx6LbdU", // Replace key
-      center: [14.5058, 46.0569],
+      center: [13.551250205401676, 46.33810690865518],
       zoom: 12,
     });
 

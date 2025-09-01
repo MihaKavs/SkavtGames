@@ -1,6 +1,8 @@
 .footer-container {
   width: 100%;
   height: 5vh;
+  position: sticky;
+  bottom: 0;
 }
 
 .footer-list {
@@ -29,4 +31,14 @@
   .link-text {
     display: none;
   }
+}
+
+.link-element {
+  cursor: pointer;
+}
+
+.element-link {
+  display: flex;
+  text-decoration: none;
+  color: black;
 }
